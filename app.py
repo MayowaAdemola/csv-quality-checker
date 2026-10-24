@@ -1,6 +1,8 @@
 import pandas as pd
 import streamlit as st
 
+from checker.duplicates import find_duplicates
+
 st.set_page_config(page_title="CSV Data Quality Checker", layout="wide")
 st.title("CSV Data Quality Checker")
 st.caption("Upload a CSV to preview it. Nothing is changed or stored.")
@@ -35,3 +37,16 @@ st.dataframe(df.head(20), use_container_width=True)
 
 st.subheader("Columns")
 st.write(", ".join(df.columns))
+
+st.subheader("Duplicate rows")
+dup = find_duplicates(df)
+
+d1, d2 = st.columns(2)
+d1.metric("Extra copies (would be removed)", dup["extra_copies"])
+d2.metric("Duplicate groups", dup["groups"])
+
+if dup["extra_copies"] == 0:
+    st.success("No exact duplicate rows found.")
+else:
+    st.caption("Row numbers match the line numbers in your CSV file (header is line 1).")
+    st.dataframe(dup["details"], use_container_width=True)
