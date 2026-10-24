@@ -1,0 +1,5 @@
+patient_id,name,age,email,visit_date
+P001,Amina Bello,34,amina@example.com,2026-01-10
+P002,Chidi Okafor,,chidi@example,2026-01-12
+P003,Ngozi Eze,29,ngozi@example.com,12/01/2026
+P002,Chidi Okafor,,chidi@example,2026-01-12
