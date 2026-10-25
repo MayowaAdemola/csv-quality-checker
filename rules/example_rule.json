@@ -1,0 +1,7 @@
+{
+  "rules": [
+    { "column": "age", "type": "range", "min": 0, "max": 120 },
+    { "column": "email", "type": "email" },
+    { "column": "visit_date", "type": "date", "format": "%Y-%m-%d" }
+  ]
+}
