@@ -106,15 +106,28 @@ Counting conventions: duplicates are counted as extra copies (the first occurren
 
 ## Limitations
 
-This version does not:
+## Limitations and research directions
 
-- Identify near-duplicates or records that belong to the same person when details differ (for example, spelling variations in names).
-- Decide whether a value is factually correct without a validation rule to compare it against.
-- Infer replacements for missing or invalid values.
-- Resolve ambiguous values. For example, `12/01/2026` fails a `%Y-%m-%d` date rule, and the tool does not guess whether it means 12 January or 1 December.
-- Assess algorithmic fairness or how data-quality issues affect predictive models.
-- Connect to production healthcare databases or process real patient information. Do not upload real patient data.
-- Handle very large files. It was tested on about 1,000 records and reads the whole file into memory.
+This is a first-stage prototype. Each limitation below is a deliberate boundary of version one, and each points to a research question I want to investigate further.
+
+- **Exact duplicates only.** The tool cannot tell that two records belong to the same person when details differ, for example spelling variations, different name order or transliteration differences. 
+*Research direction:* probabilistic record linkage, and how often linkage errors occur in health records.
+
+- **Rules check format, not truth.** A value can be valid yet wrong, such as an age of 34 recorded instead of 43, and the tool has no reference to catch it. 
+*Research direction:* domain-specific validation using reference data, cross-field consistency checks and outlier detection.
+
+- **No replacement of missing or invalid values.** The tool never fills or corrects anything. 
+*Research direction:* when imputation is appropriate in health data, and how to report the uncertainty it adds.
+
+- **Ambiguous values are not resolved.** For example, `12/01/2026` fails a `%Y-%m-%d` date rule, and the tool does not guess whether it means 12 January or 1 December. 
+*Research direction:* context-aware parsing that infers a column's likely date convention and flags its confidence instead of silently converting.
+
+- **No assessment of downstream effects.** The tool does not measure how missing values, duplicates and errors affect predictive models, or whether they affect some patient groups more than others. 
+*Research direction:* data quality and algorithmic fairness, which is the central question this project is a first step towards.
+
+- **Synthetic data only.** The tool has not been used on real patient information, and it should not be used that way. *Research direction:* privacy-preserving data-quality assessment on real health information systems, with proper ethical approval and data governance.
+- **Small scale.** It was tested on about 1,000 records and reads the whole file into memory. 
+*Research direction:* scalable, chunked processing and benchmarking on larger datasets.
 
 Whether a marker such as `NA` counts as missing depends on the dataset (it could be a legitimate code). The marker list is editable for this reason.
 
