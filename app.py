@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 
+from checker.report import build_report, remove_duplicates, summarise, to_csv_bytes
 from checker.validation import load_rules, validate
 from checker.duplicates import find_duplicates
 from checker.missing import DEFAULT_MARKERS, find_missing
@@ -104,3 +105,57 @@ elif validation["total_failures"] > 0:
     with st.expander("Show every failing cell"):
         st.caption("Row numbers match the line numbers in your CSV file (header is line 1).")
         st.dataframe(validation["details"], width="stretch")
+
+
+st.subheader("Data-quality summary")
+summary = summarise(df, dup, missing, validation)
+
+s1, s2, s3, s4 = st.columns(4)
+s1.metric("Records analysed", f"{summary['records']:,}")
+s2.metric("Extra duplicate rows", summary["extra_copies"])
+s3.metric("Missing cells", summary["missing_cells"])
+s4.metric("Validation failures", summary["validation_failures"])
+st.write(f"Rows with at least one issue: **{summary['affected_rows']}**")
+st.write(
+    "Columns with missing values or validation failures: "
+    + (", ".join(summary["affected_columns"]) or "none")
+)
+
+st.subheader("Cleaning and export")
+st.caption(
+    "Only exact duplicate rows can be removed. Missing values and invalid "
+    "entries are never filled or edited."
+)
+remove_dups = st.checkbox(
+    "Remove exact duplicate rows (keep the first occurrence)", value=False
+)
+
+if remove_dups:
+    details = dup["details"]
+    to_remove = details[details["is_extra_copy"].astype(bool)]
+    if to_remove.empty:
+        st.info("There are no exact duplicates to remove.")
+    else:
+        st.write(f"These {len(to_remove)} row(s) will be removed:")
+        st.dataframe(to_remove, width="stretch")
+
+cleaned = remove_duplicates(df) if remove_dups else df
+st.write(f"Cleaned file: **{len(cleaned):,}** of {len(df):,} rows kept.")
+
+report_text = build_report(
+    uploaded.name, df, dup, missing, validation, markers, rules, remove_dups
+)
+
+b1, b2 = st.columns(2)
+b1.download_button(
+    "Download cleaned CSV",
+    data=to_csv_bytes(cleaned),
+    file_name=f"cleaned_{uploaded.name}",
+    mime="text/csv",
+)
+b2.download_button(
+    "Download data-quality report",
+    data=report_text.encode("utf-8"),
+    file_name="data_quality_report.md",
+    mime="text/markdown",
+)
