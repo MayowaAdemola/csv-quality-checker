@@ -26,7 +26,7 @@ The project is inspired by data-quality challenges in health information managem
 Requires Python 3.10 or newer.
 
 ```
-git clone https://github.com/<your-username>/csv-quality-checker.git
+git clone https://github.com/MayowaAdemola/csv-quality-checker.git
 cd csv-quality-checker
 python -m venv .venv
 .venv\Scripts\activate
@@ -98,7 +98,7 @@ Measured results (full output in `evaluation_results.md`):
 | Missing cells | 85 | 85 | 0 | 0 | 1.00 | 1.00 |
 | Validation failures | 90 | 90 | 0 | 0 | 1.00 | 1.00 |
 
-Analysis time on the 1,030-record dataset: **<your time> seconds** (<your Python version>, <your OS>).
+Analysis time on the 1,030-record dataset: **0.092 seconds** (Python 3.12.9, pandas 3.1.0, Windows). Timing varies by machine.
 
 **How to read these results.** The dataset was built around the same rules the checker applies, so perfect scores show that the code does what it was configured to do. They do not show how the tool would perform on real, messy data, where problems are less predictable.
 
@@ -111,7 +111,7 @@ This version does not:
 - Identify near-duplicates or records that belong to the same person when details differ (for example, spelling variations in names).
 - Decide whether a value is factually correct without a validation rule to compare it against.
 - Infer replacements for missing or invalid values.
-- Treat ambiguous values consistently with your data. For example, `12/01/2026` fails a `%Y-%m-%d` date rule, and the tool does not guess whether it means 12 January or 1 December.
+- Resolve ambiguous values. For example, `12/01/2026` fails a `%Y-%m-%d` date rule, and the tool does not guess whether it means 12 January or 1 December.
 - Assess algorithmic fairness or how data-quality issues affect predictive models.
 - Connect to production healthcare databases or process real patient information. Do not upload real patient data.
 - Handle very large files. It was tested on about 1,000 records and reads the whole file into memory.
@@ -121,7 +121,3 @@ Whether a marker such as `NA` counts as missing depends on the dataset (it could
 ## Possible future work
 
 Probabilistic record linkage for near-duplicates, domain-specific validation (for example, clinical code lists), and evaluating how data-quality issues affect downstream analysis.
-
-## Licence
-
-<choose one, for example MIT, or remove this section>
