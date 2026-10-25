@@ -14,6 +14,23 @@ def find_missing(df: pd.DataFrame, markers=None) -> dict:
         markers = DEFAULT_MARKERS
     marker_set = {m.strip().lower() for m in markers if m.strip()}
 
+    if len(df) == 0:  # header-only file: nothing to check
+        return {
+            "total_missing": 0,
+            "summary": pd.DataFrame(
+                {
+                    "column": df.columns,
+                    "blank": 0,
+                    "marker": 0,
+                    "missing": 0,
+                    "missing_pct": 0.0,
+                }
+            ),
+            "details": pd.DataFrame(
+                columns=["row_number", "column", "value", "reason"]
+            ),
+        }
+
     stripped = df.apply(lambda col: col.str.strip())
     is_blank = stripped == ""
     is_marker = stripped.apply(lambda col: col.str.lower().isin(marker_set)) & ~is_blank
@@ -29,9 +46,7 @@ def find_missing(df: pd.DataFrame, markers=None) -> dict:
             "blank": blank_counts.values,
             "marker": marker_counts.values,
             "missing": missing_counts.values,
-            "missing_pct": (
-                (missing_counts / n_rows * 100).round(1).values if n_rows else 0.0
-            ),
+            "missing_pct": (missing_counts / n_rows * 100).round(1).values,
         }
     )
 

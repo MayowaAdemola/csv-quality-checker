@@ -1,0 +1,206 @@
+row_number,column,issue_type,detail
+8,age,missing,blank
+11,age,invalid,out of range
+18,age,missing,blank
+23,age,invalid,not a number
+24,age,missing,blank
+26,email,missing,marker
+37,age,missing,blank
+49,(whole row),duplicate,exact copy
+51,(whole row),duplicate,exact copy
+52,age,invalid,out of range
+54,email,missing,blank
+57,(whole row),duplicate,exact copy
+60,name,missing,blank
+63,age,invalid,out of range
+66,age,missing,marker
+71,age,invalid,out of range
+72,sex,invalid,not allowed
+78,age,invalid,out of range
+89,age,missing,marker
+89,email,missing,blank
+92,email,missing,blank
+98,email,invalid,malformed
+114,visit_date,invalid,wrong format
+132,age,missing,marker
+137,(whole row),duplicate,exact copy
+141,email,missing,blank
+144,age,missing,blank
+151,email,invalid,malformed
+157,email,missing,blank
+157,name,missing,blank
+161,visit_date,invalid,wrong format
+168,email,invalid,malformed
+179,age,invalid,not a number
+184,email,missing,marker
+187,sex,invalid,not allowed
+188,age,invalid,out of range
+196,visit_date,invalid,impossible date
+198,visit_date,invalid,wrong format
+213,sex,invalid,not allowed
+214,visit_date,missing,whitespace-only
+215,sex,invalid,not allowed
+219,age,invalid,out of range
+222,visit_date,missing,whitespace-only
+225,age,missing,blank
+233,age,missing,blank
+233,email,missing,blank
+233,sex,invalid,not allowed
+246,email,invalid,malformed
+254,name,missing,blank
+260,email,invalid,malformed
+274,email,missing,blank
+277,age,invalid,out of range
+288,age,missing,blank
+288,visit_date,invalid,wrong format
+294,age,invalid,out of range
+297,age,missing,blank
+302,email,missing,blank
+306,(whole row),duplicate,exact copy
+309,age,invalid,out of range
+314,age,missing,blank
+316,age,missing,blank
+319,visit_date,invalid,wrong format
+327,email,missing,marker
+329,age,missing,blank
+335,visit_date,invalid,wrong format
+343,email,missing,marker
+351,email,missing,blank
+361,age,missing,marker
+368,email,missing,marker
+370,email,invalid,malformed
+374,email,missing,marker
+375,age,missing,marker
+389,age,invalid,not a number
+391,(whole row),duplicate,exact copy
+395,age,invalid,not a number
+398,age,invalid,not a number
+398,visit_date,invalid,impossible date
+411,email,missing,blank
+412,visit_date,invalid,impossible date
+415,email,invalid,malformed
+416,email,missing,blank
+422,age,invalid,out of range
+427,email,invalid,malformed
+430,sex,invalid,not allowed
+431,visit_date,invalid,wrong format
+433,visit_date,invalid,wrong format
+438,age,invalid,not a number
+446,age,missing,marker
+450,email,missing,blank
+452,email,missing,blank
+454,email,invalid,malformed
+463,email,invalid,malformed
+463,visit_date,invalid,wrong format
+464,age,missing,marker
+479,(whole row),duplicate,exact copy
+487,(whole row),duplicate,exact copy
+495,(whole row),duplicate,exact copy
+498,(whole row),duplicate,exact copy
+499,email,missing,blank
+503,visit_date,invalid,impossible date
+507,age,invalid,out of range
+525,email,missing,blank
+535,age,missing,blank
+537,visit_date,invalid,impossible date
+542,age,missing,blank
+546,age,invalid,not a number
+562,visit_date,missing,whitespace-only
+565,(whole row),duplicate,exact copy
+567,email,invalid,malformed
+572,(whole row),duplicate,exact copy
+573,visit_date,missing,whitespace-only
+574,age,invalid,out of range
+575,email,missing,blank
+580,age,missing,blank
+599,email,missing,blank
+623,email,invalid,malformed
+624,age,missing,blank
+633,age,invalid,out of range
+639,email,missing,marker
+643,(whole row),duplicate,exact copy
+647,(whole row),duplicate,exact copy
+648,visit_date,invalid,impossible date
+651,(whole row),duplicate,exact copy
+652,name,missing,blank
+657,(whole row),duplicate,exact copy
+666,email,missing,marker
+670,email,invalid,malformed
+672,(whole row),duplicate,exact copy
+674,(whole row),duplicate,exact copy
+675,age,invalid,out of range
+676,visit_date,invalid,wrong format
+685,email,invalid,malformed
+698,age,invalid,not a number
+699,visit_date,invalid,impossible date
+701,(whole row),duplicate,exact copy
+708,sex,invalid,not allowed
+709,email,missing,marker
+714,age,invalid,out of range
+719,(whole row),duplicate,exact copy
+720,email,invalid,malformed
+724,age,invalid,out of range
+728,age,missing,blank
+742,email,invalid,malformed
+747,(whole row),duplicate,exact copy
+751,email,invalid,malformed
+760,age,invalid,out of range
+764,(whole row),duplicate,exact copy
+766,age,invalid,not a number
+767,age,missing,blank
+767,visit_date,invalid,impossible date
+771,(whole row),duplicate,exact copy
+782,name,missing,blank
+782,visit_date,missing,whitespace-only
+785,sex,invalid,not allowed
+786,visit_date,invalid,wrong format
+788,email,missing,blank
+793,visit_date,invalid,wrong format
+799,email,invalid,malformed
+800,sex,invalid,not allowed
+809,(whole row),duplicate,exact copy
+814,visit_date,invalid,wrong format
+816,age,missing,blank
+818,email,missing,blank
+828,visit_date,invalid,wrong format
+831,email,missing,blank
+832,age,invalid,not a number
+834,age,missing,marker
+834,email,missing,marker
+843,age,missing,marker
+862,age,invalid,out of range
+865,name,missing,blank
+867,age,missing,blank
+868,age,missing,blank
+872,visit_date,invalid,wrong format
+878,name,missing,blank
+883,age,missing,marker
+890,(whole row),duplicate,exact copy
+903,age,missing,blank
+908,(whole row),duplicate,exact copy
+914,visit_date,invalid,impossible date
+917,name,missing,blank
+920,visit_date,invalid,impossible date
+927,(whole row),duplicate,exact copy
+935,visit_date,invalid,wrong format
+937,(whole row),duplicate,exact copy
+940,age,missing,marker
+941,age,missing,blank
+943,age,missing,marker
+950,visit_date,invalid,wrong format
+953,age,missing,marker
+953,email,invalid,malformed
+966,(whole row),duplicate,exact copy
+972,age,missing,blank
+979,email,invalid,malformed
+979,name,missing,blank
+991,(whole row),duplicate,exact copy
+992,visit_date,invalid,wrong format
+993,visit_date,invalid,wrong format
+996,age,invalid,out of range
+997,age,missing,blank
+1000,age,missing,marker
+1003,name,missing,blank
+1005,sex,invalid,not allowed
+1009,age,missing,marker
+1021,visit_date,invalid,wrong format
