@@ -26,7 +26,7 @@ The project is inspired by data-quality challenges in health information managem
 Requires Python 3.10 or newer.
 
 ```
-git clone https://github.com/<your-username>/csv-quality-checker.git
+git clone https://github.com/MayowaAdemola/csv-quality-checker.git
 cd csv-quality-checker
 python -m venv .venv
 .venv\Scripts\activate
