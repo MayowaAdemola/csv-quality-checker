@@ -5,3 +5,19 @@ __pycache__/
 .streamlit/secrets.toml
 .DS_Store
 output/
+
+# local state and artifacts
+*.db
+artifacts/
+
+# secrets
+.env
+.env.*
+
+# terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+crash.log
