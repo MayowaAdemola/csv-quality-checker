@@ -1,15 +1,39 @@
-import pandas as pd
-import streamlit as st
 from pathlib import Path
 
-from checker.report import build_report, remove_duplicates, summarise, to_csv_bytes
-from checker.validation import load_rules, validate
+import pandas as pd
+import streamlit as st
+
+import history_view
+from checker import artifacts
 from checker.duplicates import find_duplicates
 from checker.missing import DEFAULT_MARKERS, find_missing
+from checker.report import build_report, remove_duplicates, summarise, to_csv_bytes
+from checker.storage import (
+    attach_artifacts, init_db, list_rule_sets, make_engine, new_session_factory,
+    rules_of, save_rule_set, save_run,
+)
+from checker.validation import load_rules, validate
 
 st.set_page_config(page_title="CSV Data Quality Checker", layout="wide")
 st.title("CSV Data Quality Checker")
-st.caption("Upload a CSV to preview it. Nothing is changed or stored.")
+
+
+@st.cache_resource
+def get_services():
+    """Created once per server: the database session factory and the file store."""
+    engine = make_engine()
+    init_db(engine)
+    return new_session_factory(engine), artifacts.make_store()
+
+
+SessionFactory, store = get_services()
+
+page = st.sidebar.radio("Page", ["Analyse a file", "Run history"])
+if page == "Run history":
+    history_view.render(SessionFactory, store)
+    st.stop()
+
+st.caption("Upload a CSV to analyse it. Nothing is saved unless you choose to save the run.")
 
 uploaded = st.file_uploader("Upload a CSV file", type=["csv"])
 
@@ -37,7 +61,7 @@ col1.metric("Records", f"{len(df):,}")
 col2.metric("Columns", len(df.columns))
 
 st.subheader("Preview (first 20 rows)")
-st.dataframe(df.head(20), use_container_width=True)
+st.dataframe(df.head(20), width="stretch")
 
 st.subheader("Columns")
 st.write(", ".join(df.columns))
@@ -53,7 +77,7 @@ if dup["extra_copies"] == 0:
     st.success("No exact duplicate rows found.")
 else:
     st.caption("Row numbers match the line numbers in your CSV file (header is line 1).")
-    st.dataframe(dup["details"], use_container_width=True)
+    st.dataframe(dup["details"], width="stretch")
 
 st.subheader("Missing values")
 marker_text = st.text_input(
@@ -64,27 +88,42 @@ markers = [m.strip() for m in marker_text.split(",") if m.strip()]
 missing = find_missing(df, markers)
 
 st.metric("Total missing cells", missing["total_missing"])
-st.dataframe(missing["summary"], use_container_width=True)
+st.dataframe(missing["summary"], width="stretch")
 
 if missing["total_missing"] == 0:
     st.success("No missing values found.")
 else:
     with st.expander("Show every missing cell"):
         st.caption("Row numbers match the line numbers in your CSV file (header is line 1).")
-        st.dataframe(missing["details"], use_container_width=True)
+        st.dataframe(missing["details"], width="stretch")
+
 st.subheader("Format and validity checks")
+with SessionFactory() as session:
+    saved_rules = {r.id: (f"{r.name} (v{r.version})", rules_of(r)) for r in list_rule_sets(session)}
+
+options = {"Default rules (rules/example_rules.json)": None}
+for rule_set_id, (label, _) in saved_rules.items():
+    options[label] = rule_set_id
+choice = st.selectbox("Rule set", list(options))
+selected_rule_set_id = options[choice]
+
 rules_file = st.file_uploader(
-    "Rules file (JSON), optional", type=["json"], key="rules_upload"
+    "Or upload a rules file (JSON). It overrides the selection above.",
+    type=["json"], key="rules_upload",
 )
 default_rules_path = Path(__file__).parent / "rules" / "example_rules.json"
 
 rules = []
+active_rule_set_id = None
 try:
     if rules_file is not None:
         rules = load_rules(rules_file.getvalue())
+    elif selected_rule_set_id is not None:
+        rules = saved_rules[selected_rule_set_id][1]
+        active_rule_set_id = selected_rule_set_id
     else:
         rules = load_rules(default_rules_path.read_text(encoding="utf-8"))
-        st.caption("Using rules/example_rules.json. Upload your own rules file to override it.")
+        st.caption("Using rules/example_rules.json.")
 except (ValueError, OSError) as e:
     st.error(f"Could not load the rules: {e}")
 
@@ -105,7 +144,6 @@ elif validation["total_failures"] > 0:
     with st.expander("Show every failing cell"):
         st.caption("Row numbers match the line numbers in your CSV file (header is line 1).")
         st.dataframe(validation["details"], width="stretch")
-
 
 st.subheader("Data-quality summary")
 summary = summarise(df, dup, missing, validation)
@@ -159,3 +197,50 @@ b2.download_button(
     file_name="data_quality_report.md",
     mime="text/markdown",
 )
+
+with st.expander("Save the active rules as a named rule set"):
+    new_name = st.text_input("Rule set name", key="rule_set_name")
+    if st.button("Save rule set"):
+        try:
+            with SessionFactory() as session:
+                saved = save_rule_set(session, new_name, rules)
+            st.success(
+                f"Saved as {saved.name} v{saved.version}. It appears in the Rule set "
+                "list on your next interaction."
+            )
+        except ValueError as e:
+            st.error(str(e))
+
+st.subheader("Save this analysis")
+st.caption(
+    "Saving keeps the summary and the location of every issue in the database. "
+    "The uploaded file is not stored, only its SHA-256 fingerprint. Cell values are "
+    "stored only if STORE_VALUES is enabled."
+)
+keep_files = st.checkbox(
+    "Also keep the cleaned CSV and the report in storage (they contain cell values)",
+    value=False,
+)
+if st.button("Save this run to history"):
+    with SessionFactory() as session:
+        run = save_run(
+            session,
+            filename=uploaded.name,
+            file_bytes=uploaded.getvalue(),
+            summary=summary,
+            markers=markers,
+            rule_set_id=active_rule_set_id,
+            duplicates_removed=remove_dups,
+            dup=dup,
+            missing=missing,
+            validation=validation,
+        )
+        if keep_files:
+            cleaned_key = store.put(
+                artifacts.run_key(run.id, "cleaned.csv"), to_csv_bytes(cleaned), "text/csv"
+            )
+            report_key = store.put(
+                artifacts.run_key(run.id, "report.md"), report_text.encode("utf-8"), "text/markdown"
+            )
+            attach_artifacts(session, run.id, cleaned_key, report_key)
+    st.success(f"Saved as run {run.id}. Open Run history in the sidebar to find it.")

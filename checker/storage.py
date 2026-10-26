@@ -9,7 +9,11 @@ from checker.models import Base, Issue, Run, RuleSet
 
 
 def make_engine(url: str | None = None):
-    return create_engine(url or config.database_url(), pool_pre_ping=True)
+    url = url or config.database_url()
+    kwargs = {"pool_pre_ping": True}
+    if url.startswith("sqlite:///") and ":memory:" not in url:
+        kwargs["connect_args"] = {"check_same_thread": False}
+    return create_engine(url, **kwargs)
 
 
 def init_db(engine) -> None:
@@ -129,3 +133,16 @@ def delete_run(session: Session, run_id: int) -> bool:
     session.delete(run)
     session.commit()
     return True
+
+
+def attach_artifacts(
+    session: Session, run_id: int,
+    cleaned_key: str | None = None, report_key: str | None = None,
+) -> None:
+    """Record where a run's saved files live in the artifact store."""
+    run = session.get(Run, run_id)
+    if run is None:
+        raise ValueError(f"Run {run_id} not found.")
+    run.cleaned_key = cleaned_key
+    run.report_key = report_key
+    session.commit()
